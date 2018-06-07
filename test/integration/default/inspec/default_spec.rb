@@ -13,3 +13,7 @@ describe command('sudo systemctl status cassandra-reaper') do
   its('stdout') { should_not match 'ERROR' }
   its('stdout') { should_not match 'WARN' }
 end
+
+describe command('getent passwd reaper') do
+  its('stdout') { should match %r{reaper:x:[0-9]+:[0-9]+:Cassandra Reaper user,,,:/home/reaper:/bin/bash\n} }
+end
