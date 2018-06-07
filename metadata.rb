@@ -3,7 +3,7 @@ require 'cookbook-release'
 name             'cassandra-reaper'
 maintainer       'Teads'
 maintainer_email 'romain.hardouin@teads.tv'
-license          'Apache 2.0'
+license          'Apache-2.0'
 description      'Installs Cassandra Reaper, a repair service for Apache Cassandra'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          Release.current_version(__FILE__)
