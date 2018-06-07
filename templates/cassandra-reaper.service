@@ -1,0 +1,15 @@
+[Unit]
+Description=Cassandra Reaper service
+ConditionPathExists=<%= node['reaper']['directory'] %>/bin/cassandra-reaper
+ConditionPathExists=<%= node['reaper']['directory'] %>/conf/cassandra-reaper.yaml
+
+[Service]
+Environment=CLASS_PATH=<%= node['reaper']['directory'] %>/server/target/cassandra-reaper-<%= node['reaper']['version'] %>.jar
+ExecStart=<%= node['reaper']['directory'] %>/bin/cassandra-reaper <%= node['reaper']['directory'] %>/conf/cassandra-reaper.yaml
+Restart=on-failure
+User=<%= node['reaper']['user'] %>
+Group=<%= node['reaper']['group'] %>
+
+[Install]
+WantedBy=multi-user.target
+Alias=cassandra-reaper.service

@@ -1,0 +1,15 @@
+DEPENDENCIES
+  cassandra-reaper
+    path: .
+    metadata: true
+
+GRAPH
+  cassandra-reaper (0.1.0)
+    java (>= 0.0.0)
+    tar (>= 0.0.0)
+  homebrew (5.0.4)
+  java (2.1.0)
+    homebrew (>= 0.0.0)
+    windows (>= 0.0.0)
+  tar (2.1.1)
+  windows (4.2.5)

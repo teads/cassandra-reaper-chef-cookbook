@@ -1,0 +1,121 @@
+# Cassandra Reaper Configuration
+
+segmentCount: <%= node['reaper']['conf']['segmentCount'] %>
+repairParallelism: <%= node['reaper']['conf']['repairParallelism'] %>
+repairIntensity: <%= node['reaper']['conf']['repairIntensity'] %>
+scheduleDaysBetween: <%= node['reaper']['conf']['scheduleDaysBetween'] %>
+repairRunThreadCount: <%= node['reaper']['conf']['repairRunThreadCount'] %>
+hangingRepairTimeoutMins: <%= node['reaper']['conf']['hangingRepairTimeoutMins'] %>
+storageType: <%= node['reaper']['conf']['storageType'] %>
+enableCrossOrigin: <%= node['reaper']['conf']['enableCrossOrigin'] %>
+incrementalRepair: <%= node['reaper']['conf']['incrementalRepair'] %>
+enableDynamicSeedList: <%= node['reaper']['conf']['enableDynamicSeedList'] %>
+repairManagerSchedulingIntervalSeconds: <%= node['reaper']['conf']['repairManagerSchedulingIntervalSeconds'] %>
+useAddressTranslator: <%= node['reaper']['conf']['useAddressTranslator'] %>
+
+# datacenterAvailability has three possible values: ALL | LOCAL | EACH
+# the correct value to use depends on whether jmx ports to C* nodes in remote datacenters are accessible
+# If the reaper has access to all node jmx ports, across all datacenters, then configure to ALL.
+# If jmx access is only available to nodes in the same datacenter as reaper in running in, then configure to LOCAL.
+# If there's a reaper instance running in every datacenter, and it's important that nodes under duress are not involved in repairs,
+#    then configure to EACH.
+#
+# The default is ALL
+datacenterAvailability: <%= node['reaper']['conf']['datacenterAvailability'] %>
+
+jmxConnectionTimeoutInSeconds: <%= node['reaper']['jmx']['connection_timeout_seconds'] %>
+
+
+<% if node['reaper']['jmx']['use_ports_mapping'] %>
+jmxPorts:
+<% node['reaper']['jmx']['ports_mapping'].each do |ip, port| -%>
+  <%= ip %>: <%= port %>
+<% end %>
+<% end %>
+
+<% if node['reaper']['jmx']['auth_enabled'] %>
+jmxAuth:
+  username: <%= node['reaper']['jmx']['username'] %>
+  password: <%= node['reaper']['jmx']['password'] %>
+<% end %>
+
+logging:
+  level: INFO
+  loggers:
+    io.dropwizard: WARN
+    org.eclipse.jetty: WARN
+  appenders:
+    - type: console
+      logFormat: "%-6level [%d] [%t] %logger{5} - %msg %n"
+      threshold: WARN
+    - type: file
+      logFormat: "%-6level [%t] %logger{5} - %msg %n"
+      currentLogFilename: /var/log/cassandra-reaper/reaper.log
+      archivedLogFilenamePattern: /var/log/cassandra-reaper/reaper-%d.log.gz
+      archivedFileCount: 99
+
+server:
+  type: default
+  applicationConnectors:
+    - type: http
+      port: 8080
+      bindHost: 0.0.0.0
+  adminConnectors:
+    - type: http
+      port: 8081
+      bindHost: 0.0.0.0
+  requestLog:
+    appenders: []
+
+<% if node['reaper']['conf']['storageType'] == 'database' || node['reaper']['conf']['storageType'] == '' %>
+database:
+  user: <%= node['reaper']['database']['user'] %>
+  password: <%= node['reaper']['database']['password'] %>
+  url: <%= node['reaper']['database']['url'] %>
+<% end %>
+
+<% if node['reaper']['conf']['storageType'] == 'cassandra' %>
+activateQueryLogger: <%= node['reaper']['cassandra']['activateQueryLogger'] %>
+
+cassandra:
+  clusterName: <%= node['reaper']['cassandra']['clusterName'] %>
+  contactPoints: [<%= node['reaper']['cassandra']['contactPoints'].join(', ') %>]
+  port: <%= node['reaper']['cassandra']['port'] %>
+  keyspace: <%= node['reaper']['cassandra']['keyspace'] %>
+  loadBalancingPolicy:
+    type: <%= node['reaper']['cassandra']['loadBalancingPolicy']['type'] %>
+    shuffleReplicas: <%= node['reaper']['cassandra']['loadBalancingPolicy']['shuffleReplicas'] %>
+    subPolicy:
+      type: <%= node['reaper']['cassandra']['loadBalancingPolicy']['subPolicy']['type'] %>
+      localDC: <%= node['reaper']['cassandra']['loadBalancingPolicy']['subPolicy']['localDC'] %>
+      usedHostsPerRemoteDC: <%= node['reaper']['cassandra']['loadBalancingPolicy']['subPolicy']['usedHostsPerRemoteDC'] %>
+      allowRemoteDCsForLocalConsistencyLevel: <%= node['reaper']['cassandra']['loadBalancingPolicy']['subPolicy']['allowRemoteDCsForLocalConsistencyLevel'] %>
+  queryOptions:
+    consistencyLevel: <%= node['reaper']['cassandra']['queryOptions']['consistencyLevel'] %>
+    serialConsistencyLevel: <%= node['reaper']['cassandra']['queryOptions']['serialConsistencyLevel'] %>
+  authProvider:
+    type: <%= node['reaper']['cassandra']['authProvider']['type'] %>
+    username: <%= node['reaper']['cassandra']['authProvider']['username'] %>
+    password: <%= node['reaper']['cassandra']['authProvider']['password'] %>
+<% end %>
+
+autoScheduling:
+  enabled: false
+  initialDelayPeriod: PT15S
+  periodBetweenPolls: PT10M
+  timeBeforeFirstSchedule: PT5M
+  scheduleSpreadPeriod: PT6H
+  excludedKeyspaces:
+    - keyspace1
+    - keyspace2
+
+
+# Uncomment the following to enable dropwizard metrics
+#  Configure to the reporter of your choice
+#  Reaper also provides prometheus metrics on the admin port at /prometheusMetrics
+
+#metrics:
+#  frequency: 1 minute
+#  reporters:
+#    - type: log
+#      logger: metrics

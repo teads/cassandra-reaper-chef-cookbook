@@ -1,0 +1,36 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+  require_chef_omnibus: 12
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: debian-9.4
+    driver:
+      box_url: https://app.vagrantup.com/bento/boxes/debian-9.4
+      network:
+        - ["forwarded_port", {guest: 8080, host: 8001}]
+  - name: ubuntu-18.04
+    driver:
+      box_url: https://app.vagrantup.com/bento/boxes/ubuntu-18.04
+      network:
+        - ["forwarded_port", {guest: 8080, host: 8002}]
+  - name: centos-7.4
+    driver:
+      box_url: https://app.vagrantup.com/bento/boxes/centos-7.4
+      network:
+        - ["forwarded_port", {guest: 8080, host: 8003}]
+
+suites:
+  - name: default
+    run_list:
+      - recipe[cassandra-reaper::default]
+    verifier:
+      sleep: 10
+    attributes:
+      reaper:
