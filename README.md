@@ -32,7 +32,7 @@ blocking in case some threads are waiting for I/O, like calling a Cassandra clus
 
  There are other attributes for general settings see [attributes/default.rb](./attributes/default.rb)
 
-## Storage backends
+## Storage backends
 
 Choose your backend, `memory` should be used for testing purpose only:
 
@@ -42,8 +42,8 @@ Choose your backend, `memory` should be used for testing purpose only:
 
 Credentials and data source name JDBC:
 
- * `node['reaper']['database']['url']`: JDBC data source name 'jdbc:<(postgresql|h2)>://<Database IP or DNS>/<Database name>' (default: `'jdbc:postgresql://127.0.0.1/reaper_db'`)
- * `node['reaper']['database']['user']`: Username (default: 'reaper')
+ * `node['reaper']['database']['url']`: JDBC data source name `'jdbc:<(postgresql|h2)>://<Database IP or DNS>/<Database name>'` (default: `'jdbc:postgresql://127.0.0.1/reaper_db'`)
+ * `node['reaper']['database']['user']`: Username (default: `'reaper'`)
  * `node['reaper']['database']['password']`: Password
 
 ### Cassandra
