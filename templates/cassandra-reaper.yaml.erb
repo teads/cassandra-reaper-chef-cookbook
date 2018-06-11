@@ -25,7 +25,6 @@ datacenterAvailability: <%= node['reaper']['conf']['datacenterAvailability'] %>
 
 jmxConnectionTimeoutInSeconds: <%= node['reaper']['jmx']['connection_timeout_seconds'] %>
 
-
 <% if node['reaper']['jmx']['use_ports_mapping'] %>
 jmxPorts:
 <% node['reaper']['jmx']['ports_mapping'].each do |ip, port| -%>
@@ -50,8 +49,8 @@ logging:
       threshold: WARN
     - type: file
       logFormat: "%-6level [%t] %logger{5} - %msg %n"
-      currentLogFilename: /var/log/cassandra-reaper/reaper.log
-      archivedLogFilenamePattern: /var/log/cassandra-reaper/reaper-%d.log.gz
+      currentLogFilename: <%= node['reaper']['log_directory'] %>/reaper.log
+      archivedLogFilenamePattern: <%= node['reaper']['log_directory'] %>/reaper-%d.log.gz
       archivedFileCount: 99
 
 server:
@@ -67,7 +66,7 @@ server:
   requestLog:
     appenders: []
 
-<% if node['reaper']['conf']['storageType'] == 'database' || node['reaper']['conf']['storageType'] == '' %>
+<% if node['reaper']['conf']['storageType'] == 'postgres' || node['reaper']['conf']['storageType'] == 'h2' %>
 database:
   user: <%= node['reaper']['database']['user'] %>
   password: <%= node['reaper']['database']['password'] %>
@@ -100,14 +99,12 @@ cassandra:
 <% end %>
 
 autoScheduling:
-  enabled: false
-  initialDelayPeriod: PT15S
-  periodBetweenPolls: PT10M
-  timeBeforeFirstSchedule: PT5M
-  scheduleSpreadPeriod: PT6H
-  excludedKeyspaces:
-    - keyspace1
-    - keyspace2
+  enabled: <%= node['reaper']['autoScheduling']['enabled'] %>
+  initialDelayPeriod: <%= node['reaper']['autoScheduling']['initialDelayPeriod'] %>
+  periodBetweenPolls: <%= node['reaper']['autoScheduling']['periodBetweenPolls'] %>
+  timeBeforeFirstSchedule: <%= node['reaper']['autoScheduling']['timeBeforeFirstSchedule'] %>
+  scheduleSpreadPeriod: <%= node['reaper']['autoScheduling']['scheduleSpreadPeriod'] %>
+  excludedKeyspaces: [<%= node['reaper']['autoScheduling']['excludedKeyspaces'].join(', ') %>]
 
 
 # Uncomment the following to enable dropwizard metrics
