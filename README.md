@@ -110,7 +110,6 @@ delivery local all
 
 # TODO
 
- * Add attributes documentation
  * Test each storage backend
  * Make more cassandra-reaper.yaml settings overridable via attributes
 
