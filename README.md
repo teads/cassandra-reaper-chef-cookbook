@@ -110,6 +110,6 @@ delivery local all
 
 # TODO
 
- * Test each storage backend
+ * Test each storage backend (run on production @ Teads with PostgreSQL backend)
  * Make more cassandra-reaper.yaml settings overridable via attributes
 
