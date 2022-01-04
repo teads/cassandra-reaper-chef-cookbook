@@ -1,5 +1,8 @@
 # Cassandra Reaper Cookbook
 
+:bangbang: |  This cookbook is deprecated as it's no longer used in Production at Teads, we moved to [container images](http://cassandra-reaper.io/docs/download/docker/)
+:---: | :---
+
 Repair service for Apache Cassandra: TLP Cassandra Reaper + Cassandra Reaper UI
 
 See http://cassandra-reaper.io/
